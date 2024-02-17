@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Compiled code
+out/
+dist/
+
+# Generated files
+*.vsix
+
+# Environment Variables
+.env
+
+# Editor settings
+.vscode/
+
+# System Files
+.DS_Store
+*.log
