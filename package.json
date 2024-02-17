@@ -1,10 +1,10 @@
 {
-  "name": "branch-safe-creator",
-  "displayName": "branch-creator",
+  "name": "git-branch-creator",
+  "displayName": "Git Branch Creator",
   "publisher": "AsafMazuz",
   "icon": "images/logo.png",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
