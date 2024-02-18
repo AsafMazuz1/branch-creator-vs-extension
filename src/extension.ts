@@ -18,9 +18,9 @@ export function activate(context: vscode.ExtensionContext) {
     // The commandId parameter must match the command field in package.json
     let disposable = vscode.commands.registerCommand('branch-creator.create', async () => {
         try {
-            const selectedRepoPath = await selectGitRepo();
-            if (!selectedRepoPath) {
-                return; // Exit if no repo is selected or available
+            const selectedRepoPaths = await selectGitRepos();  // Adjusted to handle multiple selections
+            if (!selectedRepoPaths || selectedRepoPaths.length === 0) {
+                return;
             }
             // Get the configured branch name separator from settings
             const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
@@ -34,8 +34,10 @@ export function activate(context: vscode.ExtensionContext) {
             });
 
             if (approval === 'Yes') {
-                await createGitBranch(branch, selectedRepoPath);
-                vscode.window.showInformationMessage(`Branch created successfully: ${branch}`);
+                for (const repoPath of selectedRepoPaths) {
+                    await createGitBranch(branch, repoPath);  // Create branch in each selected repo
+                }
+                vscode.window.showInformationMessage(`Branch created successfully in all selected repositories: ${branch}`);
             } else {
                 vscode.window.showInformationMessage('Branch creation aborted.');
             }
@@ -114,8 +116,7 @@ export async function getGitRepos(rootPath: string): Promise<string[]> {
     });
 }
 
-
-export async function selectGitRepo(): Promise<string | undefined> {
+export async function selectGitRepos(): Promise<string[] | undefined> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
         vscode.window.showErrorMessage('No workspace folder found. Please open a workspace.');
@@ -135,15 +136,15 @@ export async function selectGitRepo(): Promise<string | undefined> {
         description: repoPath
     }));
 
-    const selectedRepo = await vscode.window.showQuickPick(repoChoices, {
-        placeHolder: 'Select a Git repository'
+    // Allow multiple selection in the QuickPick
+    const selectedRepos = await vscode.window.showQuickPick(repoChoices, {
+        placeHolder: 'Select Git repositories',
+        canPickMany: true  // Enable multi-select
     });
 
-    return selectedRepo?.description;
+    // Return the paths of the selected repositories
+    return selectedRepos?.map(repo => repo.description);
 }
-
-
-
 
 // This method is called when your extension is deactivated
 export function deactivate() { }
