@@ -4,9 +4,10 @@ All notable changes to the "branch-creator" extension will be documented in this
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [0.0.4] - 2024-02-18
 
-- Initial release
+### Added
+- **Switch Branch Functionality**: Users can now easily switch between their local branches within the selected Git repositories. This feature supports both single and multiple repository workflows, showing branches common to all selected repositories for a unified experience.
 
 ## [0.0.3] - 2024-02-18
 
@@ -19,3 +20,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 - Minor bugs and performance issues have been addressed to ensure a smoother experience for users.
+
+## [0.0.2] - [Your Previous Version Date]
+
+[Your Previous Version Changes...]
+
+## [0.0.1] - [Your Initial Release Date]
+
+- Initial release

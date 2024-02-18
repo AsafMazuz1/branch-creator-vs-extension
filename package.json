@@ -1,68 +1,72 @@
 {
-  "name": "git-branch-creator",
-  "displayName": "Git Branch Creator",
-  "publisher": "AsafMazuz",
-  "icon": "images/logo.png",
-  "description": "",
-  "version": "0.0.3",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
-  },
-  "engines": {
-    "vscode": "^1.86.0"
-  },
-  "categories": [
-    "SCM Providers",
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "branch-creator.create",
-        "title": "Create Branch"
-      }
+    "name": "git-branch-creator",
+    "displayName": "Git Branch Creator",
+    "publisher": "AsafMazuz",
+    "icon": "images/logo.png",
+    "description": "",
+    "version": "0.0.3",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
+    },
+    "engines": {
+        "vscode": "^1.86.0"
+    },
+    "categories": [
+        "SCM Providers",
+        "Other"
     ],
-    "configuration": {
-      "type": "object",
-      "title": "Branch Creator Configuration",
-      "properties": {
-        "branch-creator.prefixes": {
-          "type": "array",
-          "default": [
-            "feature",
-            "hotfix",
-            "bugfix",
-            "general"
-          ],
-          "description": "List of prefixes for branch names."
-        },
-        "branch-creator.branchNameSeparator": {
-          "type": "string",
-          "default": "-",
-          "description": "Separator used in branch names."
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "branch-creator.create",
+                "title": "Create Branch"
+            },
+            {
+                "command": "branch-creator.switch",
+                "title": "Switch Branch"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Branch Creator Configuration",
+            "properties": {
+                "branch-creator.prefixes": {
+                    "type": "array",
+                    "default": [
+                        "feature",
+                        "hotfix",
+                        "bugfix",
+                        "general"
+                    ],
+                    "description": "List of prefixes for branch names."
+                },
+                "branch-creator.branchNameSeparator": {
+                    "type": "string",
+                    "default": "-",
+                    "description": "Separator used in branch names."
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "vscode-test",
+        "test-mocha": "tsc -p ./ && node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/node": "18.x",
+        "@types/vscode": "^1.86.0",
+        "@typescript-eslint/eslint-plugin": "^6.19.1",
+        "@typescript-eslint/parser": "^6.19.1",
+        "@vscode/test-cli": "^0.0.4",
+        "eslint": "^8.56.0",
+        "typescript": "^5.3.3"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "vscode-test",
-    "test-mocha": "tsc -p ./ && node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/node": "18.x",
-    "@types/vscode": "^1.86.0",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
-    "@typescript-eslint/parser": "^6.19.1",
-    "@vscode/test-cli": "^0.0.4",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
-  }
 }

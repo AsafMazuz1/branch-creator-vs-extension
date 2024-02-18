@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
             const branchDetails = await getBranchDetails();
-            if (!branchDetails) {return;} // User aborted the input process
+            if (!branchDetails) { return; } // User aborted the input process
 
             const { branchNameSeparator, prefix, ticketNumber, branchName, approval } = branchDetails;
 
@@ -40,10 +40,34 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(`An error occurred: ${error}`);
         }
     });
-
-
-
     context.subscriptions.push(disposable);
+
+    let switchBranchDisposable = vscode.commands.registerCommand('branch-creator.switch', async () => {
+        try {
+            const repoPaths = await getGitReposOrWorkspace();
+            if (!repoPaths || repoPaths.length === 0) {
+                vscode.window.showErrorMessage('No Git repositories found.');
+                return;
+            }
+            // If dealing with multiple repositories, find common branches; otherwise, list all branches from the single repo
+            const branches = repoPaths.length > 1 ? await findCommonBranches(repoPaths) : await listLocalBranches(repoPaths[0]);
+
+            const selectedBranch = await vscode.window.showQuickPick(branches, {
+                placeHolder: 'Select the branch to switch to'
+            });
+
+            if (!selectedBranch) { return; } // User aborted the input process
+
+            for (const repoPath of repoPaths) {
+                await switchGitBranch(selectedBranch, repoPath);
+            }
+            vscode.window.showInformationMessage(`Switched to branch ${selectedBranch} successfully in selected repositories.`);
+        } catch (error) {
+            vscode.window.showErrorMessage(`An error occurred: ${error}`);
+        }
+    });
+    context.subscriptions.push(switchBranchDisposable);
+
 }
 
 export async function selectPrefix(): Promise<string> {
@@ -145,11 +169,11 @@ export async function selectGitRepos(): Promise<string[] | undefined> {
 async function getBranchDetails() {
     const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
     const prefix = await selectPrefix();
-    if (!prefix) {return null;} // Exit if no prefix selected
+    if (!prefix) { return null; } // Exit if no prefix selected
     const ticketNumber = await getTicketNumber();
-    if (!ticketNumber) {return null;} // Exit if no ticket number provided
+    if (!ticketNumber) { return null; } // Exit if no ticket number provided
     const branchName = await getBranchName(branchNameSeparator);
-    if (!branchName) {return null;} // Exit if no branch name provided
+    if (!branchName) { return null; } // Exit if no branch name provided
 
     const approval = await vscode.window.showQuickPick(['Yes', 'No'], {
         placeHolder: `Do you approve this name? ${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`
@@ -186,6 +210,49 @@ async function getGitReposOrWorkspace(): Promise<string[] | undefined> {
 
     return selectedRepos?.map(repo => repo.description);
 }
+
+/**********************************************  Switch Branch Functions **********************************************/
+export async function getEntireBranchName(): Promise<string> {
+    const branchName = await vscode.window.showInputBox({
+        prompt: 'Enter the entire branch name you wish to switch to'
+    });
+    return branchName ?? "";
+}
+
+export function switchGitBranch(branchName: string, workspaceFolderPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        exec(`git checkout ${branchName}`, { cwd: workspaceFolderPath }, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error occurred while switching branches: ${stderr}`);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+export function listLocalBranches(workspaceFolderPath: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        exec(`git branch --list`, { cwd: workspaceFolderPath }, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error occurred while listing branches: ${stderr}`);
+                return;
+            }
+            const branches = stdout.trim().split('\n').map(branch => branch.replace('*', '').trim());
+            resolve(branches);
+        });
+    });
+}
+
+export async function findCommonBranches(repoPaths: string[]): Promise<string[]> {
+    const branchLists = await Promise.all(repoPaths.map(path => listLocalBranches(path)));
+    // Find intersection of all branch lists
+    const commonBranches = branchLists.reduce((a, b) => a.filter(c => b.includes(c)));
+    return commonBranches;
+}
+
+/**********************************************END Switch Branch Functions **********************************************/
+
 
 // This method is called when your extension is deactivated
 export function deactivate() { }

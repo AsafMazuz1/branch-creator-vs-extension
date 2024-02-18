@@ -1,13 +1,14 @@
 # Git Branch Creator for VS Code
 
-The Git Branch Creator extension simplifies the process of creating new Git branches within your Visual Studio Code workspace. It guides users through selecting a Git repository (either the workspace root or a subfolder), choosing a branch prefix, entering a ticket number, and specifying a branch name. This extension is designed to streamline your workflow by enforcing standardized branch naming conventions.
+The Git Branch Creator extension simplifies the process of creating and switching between Git branches within your Visual Studio Code workspace. It guides users through selecting a Git repository (either the workspace root or a subfolder), choosing a branch prefix (for creating branches), entering a ticket number, and specifying a branch name. This extension is designed to streamline your workflow by enforcing standardized branch naming conventions and facilitating branch management.
 
 ## Features
 
 - **Flexible Repository Selection:** Works with both the root workspace and subfolder Git repositories.
-- **Customizable Branch Prefixes:** Configure branch prefixes to match your project's naming conventions.
+- **Customizable Branch Prefixes:** Configure branch prefixes to match your project's naming conventions for creating new branches.
 - **Configurable Branch Name Separator:** Customize the separator used in branch names to fit your team's standards.
 - **Interactive Branch Creation:** Guides you through each step of the branch creation process with intuitive prompts.
+- **Efficient Branch Switching:** Easily switch between existing local branches with a simple selection from a list, including handling multiple repositories by showing branches common to all.
 
 ## Requirements
 
@@ -29,10 +30,20 @@ This extension contributes the following settings:
 
 ## Usage
 
+### Creating a New Branch
+
 1. Open the Command Palette with `Ctrl+Shift+P`.
 2. Type "Create Git Branch" and press Enter.
 3. Follow the interactive prompts to select a Git repository, choose a branch prefix, enter a ticket number, and specify a branch name.
 4. Confirm the creation of the new branch when prompted.
+
+### Switching Between Branches
+
+1. Open the Command Palette with `Ctrl+Shift+P`.
+2. Type "Switch Git Branch" and press Enter.
+3. If you have multiple repositories, you'll first select the relevant repository or repositories.
+4. Choose from a list of available local branches. If multiple repositories are selected, only the branches common to all selected repositories will be shown.
+5. Confirm your selection to switch to the chosen branch.
 
 ## Customizing
 
@@ -50,6 +61,7 @@ Alternatively, you can modify your `settings.json` directly:
   "branch-creator.branchNameSeparator": "_"
 }
 ```
+
 ## Contributing
 
 Contributions are always welcome! If you'd like to contribute, please follow these steps:
