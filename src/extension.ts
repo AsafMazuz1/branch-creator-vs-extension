@@ -18,26 +18,21 @@ export function activate(context: vscode.ExtensionContext) {
     // The commandId parameter must match the command field in package.json
     let disposable = vscode.commands.registerCommand('branch-creator.create', async () => {
         try {
-            const selectedRepoPaths = await selectGitRepos();  // Adjusted to handle multiple selections
-            if (!selectedRepoPaths || selectedRepoPaths.length === 0) {
+            const repoPaths = await getGitReposOrWorkspace(); // Adjusted to directly get paths or workspace
+            if (!repoPaths || repoPaths.length === 0) {
+                vscode.window.showErrorMessage('No Git repositories found.');
                 return;
             }
-            // Get the configured branch name separator from settings
-            const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
-            const prefix = await selectPrefix();
-            const ticketNumber = await getTicketNumber();
-            const branchName = await getBranchName(branchNameSeparator);
-            const branch = `${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`;
+            const branchDetails = await getBranchDetails();
+            if (!branchDetails) {return;} // User aborted the input process
 
-            const approval = await vscode.window.showQuickPick(['Yes', 'No'], {
-                placeHolder: `Do you approve this name? ${branch}`
-            });
+            const { branchNameSeparator, prefix, ticketNumber, branchName, approval } = branchDetails;
 
             if (approval === 'Yes') {
-                for (const repoPath of selectedRepoPaths) {
-                    await createGitBranch(branch, repoPath);  // Create branch in each selected repo
+                for (const repoPath of repoPaths) {
+                    await createGitBranch(`${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`, repoPath);
                 }
-                vscode.window.showInformationMessage(`Branch created successfully in all selected repositories: ${branch}`);
+                vscode.window.showInformationMessage(`Branch created successfully in selected repositories: ${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`);
             } else {
                 vscode.window.showInformationMessage('Branch creation aborted.');
             }
@@ -143,6 +138,52 @@ export async function selectGitRepos(): Promise<string[] | undefined> {
     });
 
     // Return the paths of the selected repositories
+    return selectedRepos?.map(repo => repo.description);
+}
+
+
+async function getBranchDetails() {
+    const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
+    const prefix = await selectPrefix();
+    if (!prefix) {return null;} // Exit if no prefix selected
+    const ticketNumber = await getTicketNumber();
+    if (!ticketNumber) {return null;} // Exit if no ticket number provided
+    const branchName = await getBranchName(branchNameSeparator);
+    if (!branchName) {return null;} // Exit if no branch name provided
+
+    const approval = await vscode.window.showQuickPick(['Yes', 'No'], {
+        placeHolder: `Do you approve this name? ${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`
+    });
+
+    return { branchNameSeparator, prefix, ticketNumber, branchName, approval };
+}
+
+async function getGitReposOrWorkspace(): Promise<string[] | undefined> {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+        vscode.window.showErrorMessage('No workspace folder found. Please open a workspace.');
+        return undefined;
+    }
+
+    const rootPath = workspaceFolders[0].uri.fsPath;
+    const repos = await getGitRepos(rootPath);
+
+    // If only the root is a Git repo or no other Git repos found, return the root path
+    if (repos.length === 0 || (repos.length === 1 && repos[0] === rootPath)) {
+        return [rootPath];
+    }
+
+    // If multiple repos found, including the root, let the user select
+    const repoChoices = repos.map(repoPath => ({
+        label: repoPath === rootPath ? "$(file-directory) Workspace Root" : `$(file-submodule) ${path.basename(repoPath)}`,
+        description: repoPath
+    }));
+
+    const selectedRepos = await vscode.window.showQuickPick(repoChoices, {
+        placeHolder: 'Select Git repositories',
+        canPickMany: true
+    });
+
     return selectedRepos?.map(repo => repo.description);
 }
 
