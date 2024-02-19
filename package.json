@@ -4,13 +4,13 @@
     "publisher": "AsafMazuz",
     "icon": "images/logo.png",
     "description": "",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "repository": {
         "type": "git",
         "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
     },
     "engines": {
-        "vscode": "^1.86.0"
+        "vscode": "^1.40.0"
     },
     "categories": [
         "SCM Providers",
