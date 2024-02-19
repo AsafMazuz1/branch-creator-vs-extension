@@ -4,13 +4,13 @@
     "publisher": "AsafMazuz",
     "icon": "images/logo.png",
     "description": "",
-    "version": "0.0.5",
+    "version": "0.0.4",
     "repository": {
         "type": "git",
         "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
     },
     "engines": {
-        "vscode": "^1.40.0"
+        "vscode": "^1.86.0"
     },
     "categories": [
         "SCM Providers",
@@ -62,7 +62,7 @@
     },
     "devDependencies": {
         "@types/node": "18.x",
-        "@types/vscode": "^1.86.0",
+        "@types/vscode": "^1.40.0",
         "@typescript-eslint/eslint-plugin": "^6.19.1",
         "@typescript-eslint/parser": "^6.19.1",
         "@vscode/test-cli": "^0.0.4",
