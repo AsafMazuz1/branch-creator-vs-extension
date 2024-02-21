@@ -4,7 +4,7 @@
     "publisher": "AsafMazuz",
     "icon": "images/logo.png",
     "description": "",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "repository": {
         "type": "git",
         "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
@@ -47,7 +47,18 @@
                     "type": "string",
                     "default": "-",
                     "description": "Separator used in branch names."
+                },
+                "branch-creator.defaultSwitchAndPull": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Automatically pull updates from the remote repository when switching branches."
+                },
+                "branch-creator.showRemoteBranches": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show remote branches in the branch list when switching."
                 }
+
             }
         }
     },

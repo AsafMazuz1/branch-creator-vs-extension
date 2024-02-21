@@ -58,14 +58,29 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (!selectedBranch) { return; } // User aborted the input process
 
+            // Determine if we should pull after switching
+            const shouldPull = vscode.workspace.getConfiguration('branch-creator').get<boolean>('defaultSwitchAndPull', false);
+            let pullApproval = 'No';
+            if (!shouldPull) {
+                // Ask once before starting the loop if the setting is disabled
+                const result = await vscode.window.showQuickPick(['Yes', 'No'], {
+                    placeHolder: 'Pull changes from the remote repository for all selected branches?'
+                });
+                pullApproval = result ?? 'No';
+            }
+
             for (const repoPath of repoPaths) {
                 await switchGitBranch(selectedBranch, repoPath);
+                if (shouldPull || pullApproval === 'Yes') {
+                    await pullChanges(repoPath); // This function remains unchanged
+                }
             }
             vscode.window.showInformationMessage(`Switched to branch ${selectedBranch} successfully in selected repositories.`);
         } catch (error) {
             vscode.window.showErrorMessage(`An error occurred: ${error}`);
         }
     });
+
     context.subscriptions.push(switchBranchDisposable);
 
 }
@@ -223,7 +238,7 @@ export function switchGitBranch(branchName: string, workspaceFolderPath: string)
     return new Promise((resolve, reject) => {
         exec(`git checkout ${branchName}`, { cwd: workspaceFolderPath }, (error, stdout, stderr) => {
             if (error) {
-                reject(`Error occurred while switching branches: ${stderr}`);
+                reject(`Error occurred while switching branches: ${stderr} Repo: ${workspaceFolderPath}`);
                 return;
             }
             resolve();
@@ -233,16 +248,34 @@ export function switchGitBranch(branchName: string, workspaceFolderPath: string)
 
 export function listLocalBranches(workspaceFolderPath: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
-        exec(`git branch --list`, { cwd: workspaceFolderPath }, (error, stdout, stderr) => {
+        // Check the user's setting for showing remote branches
+        const showRemoteBranches = vscode.workspace.getConfiguration('branch-creator').get<boolean>('showRemoteBranches', true);
+        const listCommand = showRemoteBranches ? `git branch --list --all` : `git branch --list`;
+
+        exec(listCommand, { cwd: workspaceFolderPath }, (error, stdout, stderr) => {
             if (error) {
                 reject(`Error occurred while listing branches: ${stderr}`);
                 return;
             }
-            const branches = stdout.trim().split('\n').map(branch => branch.replace('*', '').trim());
-            resolve(branches);
+            // Parse branches
+            const branches = stdout.trim().split('\n').map(branch => {
+                branch = branch.replace('*', '').trim();
+                // Optionally format or filter branch names
+                if (showRemoteBranches) {
+                    // Remove the remote prefix if showing remote branches
+                    return branch.replace(/^remotes\/[^\/]+\//, '');
+                }
+                return branch;
+            });
+
+            // Remove duplicates, useful if showing remote branches
+            const uniqueBranches = [...new Set(branches)];
+
+            resolve(uniqueBranches);
         });
     });
 }
+
 
 export async function findCommonBranches(repoPaths: string[]): Promise<string[]> {
     const branchLists = await Promise.all(repoPaths.map(path => listLocalBranches(path)));
@@ -251,6 +284,18 @@ export async function findCommonBranches(repoPaths: string[]): Promise<string[]>
     return commonBranches;
 }
 
+async function pullChanges(workspaceFolderPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        exec(`git pull`, { cwd: workspaceFolderPath }, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error occurred while pulling changes: ${stderr}`);
+                return;
+            }
+            vscode.window.showInformationMessage('Pulled changes from the remote repository successfully.');
+            resolve();
+        });
+    });
+}
 /**********************************************END Switch Branch Functions **********************************************/
 
 
