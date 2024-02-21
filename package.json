@@ -69,7 +69,9 @@
         "pretest": "npm run compile && npm run lint",
         "lint": "eslint src --ext ts",
         "test": "vscode-test",
-        "test-mocha": "tsc -p ./ && node ./out/test/runTest.js"
+        "test-mocha": "tsc -p ./ && node ./out/test/runTest.js",
+        "pack": "vsce package",
+        "publish": "vsce publish"
     },
     "devDependencies": {
         "@types/node": "18.x",
