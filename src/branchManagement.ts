@@ -1,0 +1,61 @@
+import * as vscode from 'vscode';
+
+/**
+ * Initiates the process to gather all necessary details for creating a new branch.
+ * This includes selecting a prefix, entering a ticket number, and specifying a branch name.
+ * @returns {Promise<{branchNameSeparator: string, prefix: string, ticketNumber: string, branchName: string, approval: string} | null>}
+ * A promise that resolves to an object containing all branch details or null if the process is aborted.
+ */
+export async function getBranchDetails(): Promise<{ branchNameSeparator: string; prefix: string; ticketNumber: string; branchName: string; approval: string } | null> {
+    const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
+    const prefix = await selectPrefix();
+    if (!prefix) { return null; } // Exit if no prefix selected
+    const ticketNumber = await getTicketNumber();
+    if (!ticketNumber) { return null; } // Exit if no ticket number provided
+    const branchName = await getBranchName(branchNameSeparator);
+    if (!branchName) { return null; } // Exit if no branch name provided
+
+    const approval = await vscode.window.showQuickPick(['Yes', 'No'], {
+        placeHolder: `Do you approve this name? ${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`
+    });
+
+    return approval === 'Yes' ? { branchNameSeparator, prefix, ticketNumber, branchName, approval } : null;
+}
+
+/**
+ * Presents a quick pick selection of configured prefixes for the user to choose from.
+ * @returns {Promise<string>} A promise that resolves to the selected prefix or an empty string if aborted.
+ */
+export async function selectPrefix(): Promise<string> {
+    const prefixes = vscode.workspace.getConfiguration('branch-creator').get<string[]>('prefixes', []);
+    // Add number before each prefix for quick selection
+    const formattedPrefixes = prefixes.map((prefix, index) => `${index + 1}. ${prefix}`);
+    const selected = await vscode.window.showQuickPick(formattedPrefixes, {
+        placeHolder: 'Select a prefix'
+    });
+    // Remove the number from the selected prefix
+    return selected ? selected.split('. ')[1] : "";
+}
+
+/**
+ * Requests the user to enter a ticket number through an input box.
+ * @returns {Promise<string>} A promise that resolves to the entered ticket number or an empty string if no input is provided.
+ */
+export async function getTicketNumber(): Promise<string> {
+    const ticketNumber = await vscode.window.showInputBox({
+        prompt: 'Enter the ticket number'
+    });
+    return ticketNumber ?? "";
+}
+
+/**
+ * Requests the user to enter a branch name, following the provided branch name separator for formatting.
+ * @param {string} branchNameSeparator The separator to use in the branch name, typically a dash (-) or underscore (_).
+ * @returns {Promise<string>} A promise that resolves to the entered branch name or an empty string if no input is provided.
+ */
+export async function getBranchName(branchNameSeparator: string): Promise<string> {
+    const branchName = await vscode.window.showInputBox({
+        prompt: `Enter the branch name (use '${branchNameSeparator}' to separate words):`
+    });
+    return branchName ?? "";
+}
