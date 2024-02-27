@@ -1,85 +1,89 @@
 {
-    "name": "git-branch-creator",
-    "displayName": "Git Branch Creator",
-    "publisher": "AsafMazuz",
-    "icon": "images/logo.png",
-    "description": "",
-    "version": "0.0.6",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
-    },
-    "engines": {
-        "vscode": "^1.86.0"
-    },
-    "categories": [
-        "SCM Providers",
-        "Other"
+  "name": "git-branch-creator",
+  "displayName": "Git Branch Creator",
+  "publisher": "AsafMazuz",
+  "icon": "images/logo.png",
+  "description": "",
+  "version": "0.0.6",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AsafMazuz1/branch-creator-vs-extension"
+  },
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "branch-creator.create",
+        "title": "branch creator : Create Branch"
+      },
+      {
+        "command": "branch-creator.switch",
+        "title": "branch creator : Switch Branch"
+      },
+      {
+        "command": "branch-creator.validate",
+        "title": "branch creator : Validate Branch"
+      }
     ],
-    "activationEvents": [],
-    "main": "./out/extension.js",
-    "contributes": {
-        "commands": [
-            {
-                "command": "branch-creator.create",
-                "title": "Create Branch"
-            },
-            {
-                "command": "branch-creator.switch",
-                "title": "Switch Branch"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Branch Creator Configuration",
-            "properties": {
-                "branch-creator.prefixes": {
-                    "type": "array",
-                    "default": [
-                        "feature",
-                        "hotfix",
-                        "bugfix",
-                        "general"
-                    ],
-                    "description": "List of prefixes for branch names."
-                },
-                "branch-creator.branchNameSeparator": {
-                    "type": "string",
-                    "default": "-",
-                    "description": "Separator used in branch names."
-                },
-                "branch-creator.defaultSwitchAndPull": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Automatically pull updates from the remote repository when switching branches."
-                },
-                "branch-creator.showRemoteBranches": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Show remote branches in the branch list when switching."
-                }
-            }
+    "configuration": {
+      "type": "object",
+      "title": "Branch Creator Configuration",
+      "properties": {
+        "branch-creator.prefixes": {
+          "type": "array",
+          "default": [
+            "feature",
+            "hotfix",
+            "bugfix",
+            "general"
+          ],
+          "description": "List of prefixes for branch names."
+        },
+        "branch-creator.branchNameSeparator": {
+          "type": "string",
+          "default": "-",
+          "description": "Separator used in branch names."
+        },
+        "branch-creator.defaultSwitchAndPull": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically pull updates from the remote repository when switching branches."
+        },
+        "branch-creator.showRemoteBranches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show remote branches in the branch list when switching."
         }
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "vscode-test",
-        "test-mocha": "tsc -p ./ && node ./out/test/runTest.js",
-        "pack": "vsce package",
-        "publish": "vsce publish"
-    },
-    "devDependencies": {
-        "@total-typescript/ts-reset": "^0.5.1",
-        "@types/node": "18.x",
-        "@types/vscode": "^1.40.0",
-        "@typescript-eslint/eslint-plugin": "^6.19.1",
-        "@typescript-eslint/parser": "^6.19.1",
-        "@vscode/test-cli": "^0.0.4",
-        "eslint": "^8.56.0",
-        "typescript": "^5.3.3"
+      }
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "test-mocha": "tsc -p ./ && node ./out/test/runTest.js",
+    "pack": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@total-typescript/ts-reset": "^0.5.1",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.40.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "@vscode/test-cli": "^0.0.4",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
 }

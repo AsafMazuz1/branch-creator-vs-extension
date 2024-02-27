@@ -10,8 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
     let switchBranchDisposable = registerSwitchBranchCommand();
     context.subscriptions.push(switchBranchDisposable);
 
-    // let registerValidateBranchDisposable = registerValidateBranchCommand();
-    // context.subscriptions.push(registerValidateBranchDisposable);
+    let registerValidateBranchDisposable = registerValidateBranchCommand();
+    context.subscriptions.push(registerValidateBranchDisposable);
 }
 
 export function deactivate() { }
