@@ -47,6 +47,16 @@
           ],
           "description": "List of prefixes for branch names."
         },
+        "branch-creator.validateWhiteList": {
+          "type": "array",
+          "default": [
+            "master",
+            "main",
+            "develop",
+            "staging"
+          ],
+          "description": "List of white list branch names that should not be validated"
+        },
         "branch-creator.branchNameSeparator": {
           "type": "string",
           "default": "-",

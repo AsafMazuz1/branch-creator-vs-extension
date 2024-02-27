@@ -112,18 +112,3 @@ export async function findCommonBranches(repoPaths: string[]): Promise<string[]>
     return commonBranches;
 }
 
-/**
- * Retrieves the configured branch name separator from the extension's settings.
- * @returns {string} The branch name separator.
- */
-export function getBranchSeparator(): string {
-    return vscode.workspace.getConfiguration(CONFIG_ROOT_NAME).get<string>('branchNameSeparator', '-');
-}
-
-/**
- * Retrieves the configured branch prefixes from the extension's settings.
- * @returns {string[]} An array of branch prefixes.
- */
-export function getBranchPrefixes(): string[] {
-    return vscode.workspace.getConfiguration(CONFIG_ROOT_NAME).get<string[]>('prefixes', []);
-}

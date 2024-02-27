@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { getBranchPrefixes, getBranchSeparator, getGitReposOrWorkspace, listLocalBranches } from './utils';
+import { getGitReposOrWorkspace, listLocalBranches } from './utils';
+import { getBranchNameSeparator, getPrefixes, getValidateBranchNameWhiteList } from './config';
 
 /**
  * Initiates the process to gather all necessary details for creating a new branch.
@@ -62,8 +63,8 @@ export async function getBranchName(branchNameSeparator: string): Promise<string
 }
 
 export async function validateBranchNames(): Promise<void> {
-    const branchNameSeparator = getBranchSeparator();
-    const branchPrefixes = getBranchPrefixes();
+    const branchNameSeparator = getBranchNameSeparator();
+    const branchPrefixes = getPrefixes();
     if (branchPrefixes.length === 0) {
         vscode.window.showInformationMessage('No branch prefixes are configured. Please configure them in the extension settings.');
         return;
@@ -79,7 +80,13 @@ export async function validateBranchNames(): Promise<void> {
     }
     const allGitBranches = await listLocalBranches(path);
 
-    const branchNameParts = allGitBranches.map(branch => branch.split(branchNameSeparator).at(0)).filter(Boolean);
+    const whiteListBranches = getValidateBranchNameWhiteList();
+
+    const filteredBranches = allGitBranches.filter(branch => !whiteListBranches.includes(branch));
+
+    console.log(filteredBranches);
+
+    const branchNameParts = filteredBranches.map(branch => branch.split(branchNameSeparator).at(0)).filter(Boolean);
 
     const arePrefixesValid = branchNameParts.every(part => branchPrefixes.includes(part));
 

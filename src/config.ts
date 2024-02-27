@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 
+const CONFIG_ROOT_NAME = 'branch-creator';
+
+
+
 /**
  * Retrieves a configuration value for the given key from the extension's settings.
  * @param key The configuration key to retrieve.
@@ -7,7 +11,7 @@ import * as vscode from 'vscode';
  * @returns The value of the configuration setting.
  */
 function getConfig<T>(key: string, defaultValue: T): T {
-    return vscode.workspace.getConfiguration('branch-creator').get<T>(key, defaultValue);
+    return vscode.workspace.getConfiguration(CONFIG_ROOT_NAME).get<T>(key, defaultValue);
 }
 
 /**
@@ -40,4 +44,8 @@ export function getPrefixes(): string[] {
  */
 export function defaultSwitchAndPull(): boolean {
     return getConfig<boolean>('defaultSwitchAndPull', false);
+}
+
+export function getValidateBranchNameWhiteList(): string[] {
+    return getConfig<string[]>('validateWhiteList', []);
 }
