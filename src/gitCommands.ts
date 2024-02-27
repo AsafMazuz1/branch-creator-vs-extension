@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
 import { getGitReposOrWorkspace, listLocalBranches, findCommonBranches } from './utils';
-import { getBranchDetails } from './branchManagement';
+import { getBranchDetails, validateBranchNames } from './branchManagement';
 
 /**
  * Registers the command for creating a new Git branch.
@@ -91,6 +91,16 @@ export function registerSwitchBranchCommand(): vscode.Disposable {
                 }
             }
             vscode.window.showInformationMessage(`Switched to branch ${selectedBranch} successfully in selected repositories.`);
+        } catch (error) {
+            vscode.window.showErrorMessage(`An error occurred: ${error}`);
+        }
+    });
+}
+
+export function registerValidateBranchCommand(): vscode.Disposable {
+    return vscode.commands.registerCommand('branch-creator.validate', async () => {
+        try {
+            await validateBranchNames();
         } catch (error) {
             vscode.window.showErrorMessage(`An error occurred: ${error}`);
         }

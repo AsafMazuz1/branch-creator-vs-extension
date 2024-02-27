@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getBranchPrefixes, getBranchSeparator, getGitReposOrWorkspace, listLocalBranches } from './utils';
 
 /**
  * Initiates the process to gather all necessary details for creating a new branch.
@@ -58,4 +59,36 @@ export async function getBranchName(branchNameSeparator: string): Promise<string
         prompt: `Enter the branch name (use '${branchNameSeparator}' to separate words):`
     });
     return branchName ?? "";
+}
+
+export async function validateBranchNames(): Promise<void> {
+    const branchNameSeparator = getBranchSeparator();
+    const branchPrefixes = getBranchPrefixes();
+    if (branchPrefixes.length === 0) {
+        vscode.window.showInformationMessage('No branch prefixes are configured. Please configure them in the extension settings.');
+        return;
+    }
+    const repoPaths = await getGitReposOrWorkspace();
+    if (!repoPaths || repoPaths?.length === 0) {
+        vscode.window.showErrorMessage('No Git repositories found.');
+        return;
+    }
+    const path = repoPaths.at(0);
+    if (!path) {
+        return;
+    }
+    const allGitBranches = await listLocalBranches(path);
+
+    const branchNameParts = allGitBranches.map(branch => branch.split(branchNameSeparator).at(0)).filter(Boolean);
+
+    const arePrefixesValid = branchNameParts.every(part => branchPrefixes.includes(part));
+
+    if (arePrefixesValid) {
+        vscode.window.showInformationMessage('All branch prefixes are valid.');
+        return;
+    }
+    const invalidPrefixes = branchNameParts.filter(part => !branchPrefixes.includes(part));
+    vscode.window.showErrorMessage(`The following branch prefixes do not match the prefixes: ${invalidPrefixes.join(', ')}`);
+    return;
+
 }

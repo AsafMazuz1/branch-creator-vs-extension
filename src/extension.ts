@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { registerCreateBranchCommand, registerSwitchBranchCommand } from './gitCommands';
+import { registerCreateBranchCommand, registerSwitchBranchCommand, registerValidateBranchCommand } from './gitCommands';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Your extension "branch-creator" is now active!');
@@ -9,6 +9,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     let switchBranchDisposable = registerSwitchBranchCommand();
     context.subscriptions.push(switchBranchDisposable);
+
+    // let registerValidateBranchDisposable = registerValidateBranchCommand();
+    // context.subscriptions.push(registerValidateBranchDisposable);
 }
 
-export function deactivate() {}
+export function deactivate() { }

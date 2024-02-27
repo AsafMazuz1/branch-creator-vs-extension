@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
 
+const CONFIG_ROOT_NAME = 'branch-creator';
+
 /**
  * Asynchronously finds Git repositories in a given root path.
  * @param {string} rootPath The root path to search for Git repositories.
@@ -108,4 +110,20 @@ export async function findCommonBranches(repoPaths: string[]): Promise<string[]>
     // Find intersection of all branch lists
     const commonBranches = branchLists.reduce((a, b) => a.filter(c => b.includes(c)));
     return commonBranches;
+}
+
+/**
+ * Retrieves the configured branch name separator from the extension's settings.
+ * @returns {string} The branch name separator.
+ */
+export function getBranchSeparator(): string {
+    return vscode.workspace.getConfiguration(CONFIG_ROOT_NAME).get<string>('branchNameSeparator', '-');
+}
+
+/**
+ * Retrieves the configured branch prefixes from the extension's settings.
+ * @returns {string[]} An array of branch prefixes.
+ */
+export function getBranchPrefixes(): string[] {
+    return vscode.workspace.getConfiguration(CONFIG_ROOT_NAME).get<string[]>('prefixes', []);
 }

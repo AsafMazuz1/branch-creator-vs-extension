@@ -58,7 +58,6 @@
                     "default": true,
                     "description": "Show remote branches in the branch list when switching."
                 }
-
             }
         }
     },
@@ -74,6 +73,7 @@
         "publish": "vsce publish"
     },
     "devDependencies": {
+        "@total-typescript/ts-reset": "^0.5.1",
         "@types/node": "18.x",
         "@types/vscode": "^1.40.0",
         "@typescript-eslint/eslint-plugin": "^6.19.1",
