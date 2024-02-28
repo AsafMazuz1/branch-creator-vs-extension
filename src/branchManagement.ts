@@ -84,8 +84,6 @@ export async function validateBranchNames(): Promise<void> {
 
     const filteredBranches = allGitBranches.filter(branch => !whiteListBranches.includes(branch));
 
-    console.log(filteredBranches);
-
     const branchNameParts = filteredBranches.map(branch => branch.split(branchNameSeparator).at(0)).filter(Boolean);
 
     const arePrefixesValid = branchNameParts.every(part => branchPrefixes.includes(part));
