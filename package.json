@@ -63,6 +63,11 @@
           "default": "-",
           "description": "Separator used in branch names."
         },
+        "branch-creator.isTicketNumberMust": {
+          "type": "boolean",
+          "default": true,
+          "description": "Is ticket number must in branch name."
+        },
         "branch-creator.defaultSwitchAndPull": {
           "type": "boolean",
           "default": false,

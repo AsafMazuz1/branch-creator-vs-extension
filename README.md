@@ -23,7 +23,7 @@ This extension contributes the following settings:
 - `branch-creator.prefixes`: An array of prefixes for branch names. Default is `["feature", "hotfix", "bugfix", "general"]`.
 - `branch-creator.branchNameSeparator`: The separator used in branch names. Default is `-`.
 - `branch-creator.validateWhiteList`: List of whitelist branch names that should not be validated. Defaults include `["master", "main", "develop", "staging", "HEAD -> origin/master"]`.
-
+- `branch-creator.isTicketNumberMust`: Specifies whether including a ticket number is mandatory for branch naming. Default is `true`. If set to `false`, branches can be created without specifying a ticket number.
 
 ## Installation
 
@@ -68,7 +68,8 @@ Alternatively, you can modify your `settings.json` directly:
 {
   "branch-creator.prefixes": ["feature", "hotfix", "bugfix", "release"],
   "branch-creator.branchNameSeparator": "_",
-  "branch-creator.validateWhiteList": ["master", "main", "develop", "staging", "HEAD -> origin/master"]
+  "branch-creator.validateWhiteList": ["master", "main", "develop", "staging", "HEAD -> origin/master"],
+   "branch-creator.isTicketNumberMust": false
 }
 ```
 

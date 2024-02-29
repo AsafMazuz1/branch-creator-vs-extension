@@ -18,13 +18,13 @@ export function registerCreateBranchCommand(): vscode.Disposable {
             const branchDetails = await getBranchDetails();
             if (!branchDetails) { return; } // User aborted the input process
 
-            const { branchNameSeparator, prefix, ticketNumber, branchName, approval } = branchDetails;
+            const { branchNameFinal, approval } = branchDetails;
 
             if (approval === 'Yes') {
                 for (const repoPath of repoPaths) {
-                    await createGitBranch(`${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`, repoPath);
+                    await createGitBranch(`${branchNameFinal}`, repoPath);
                 }
-                vscode.window.showInformationMessage(`Branch created successfully in selected repositories: ${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`);
+                vscode.window.showInformationMessage(`Branch created successfully in selected repositories: ${branchNameFinal}`);
             } else {
                 vscode.window.showInformationMessage('Branch creation aborted.');
             }

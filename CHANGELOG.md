@@ -4,6 +4,14 @@ All notable changes to the "branch-creator" extension will be documented in this
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.8] - 2024-02-29
+
+### Added
+- **Optional Ticket Number for Branch Creation**: Added a new setting `branch-creator.isTicketNumberMust` to allow creating branches without a ticket number. This provides flexibility in branch naming for projects that do not use ticket numbers in branch names.
+
+### Improved
+- **Enhanced Branch Naming Flexibility**: Improved the branch naming process to support prefixes that do not end with a '/'. Now, the branch name separator is only added when necessary, allowing for more natural branch names in certain project structures.
+
 ## [0.0.7] - 2024-02-29
 
 ### Added

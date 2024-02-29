@@ -8,20 +8,38 @@ import { getBranchNameSeparator, getPrefixes, getValidateBranchNameWhiteList } f
  * @returns {Promise<{branchNameSeparator: string, prefix: string, ticketNumber: string, branchName: string, approval: string} | null>}
  * A promise that resolves to an object containing all branch details or null if the process is aborted.
  */
-export async function getBranchDetails(): Promise<{ branchNameSeparator: string; prefix: string; ticketNumber: string; branchName: string; approval: string } | null> {
+export async function getBranchDetails(): Promise<{ branchNameFinal: string; approval: string } | null> {
     const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
     const prefix = await selectPrefix();
     if (!prefix) { return null; } // Exit if no prefix selected
     const ticketNumber = await getTicketNumber();
-    if (!ticketNumber) { return null; } // Exit if no ticket number provided
+    //Check if ticket number is must or not from settings
+    const isTicketNumberMust = vscode.workspace.getConfiguration('branch-creator').get<boolean>('isTicketNumberMust', true);
+    if (!ticketNumber && isTicketNumberMust ) {
+        vscode.window.showErrorMessage('Ticket number is required.');
+        return null;
+     } // Exit if no ticket number provided
     const branchName = await getBranchName(branchNameSeparator);
     if (!branchName) { return null; } // Exit if no branch name provided
 
+    //Build final branch name based on settings
+    let branchNameFinal = '';
+    //If prefix ends with / then dont add separator
+    let finalPrefix = prefix;
+    if(!prefix.endsWith('/')){
+        finalPrefix = `${prefix}${branchNameSeparator}`;
+    }
+    if(ticketNumber){
+        branchNameFinal = `${finalPrefix}${ticketNumber}${branchNameSeparator}${branchName}`;
+    }else{
+        branchNameFinal = `${finalPrefix}${branchName}`;
+    }
+
     const approval = await vscode.window.showQuickPick(['Yes', 'No'], {
-        placeHolder: `Do you approve this name? ${prefix}${branchNameSeparator}${ticketNumber}${branchNameSeparator}${branchName}`
+        placeHolder: `Do you approve this name? ${branchNameFinal}`
     });
 
-    return approval === 'Yes' ? { branchNameSeparator, prefix, ticketNumber, branchName, approval } : null;
+    return approval === 'Yes' ? { branchNameFinal, approval } : null;
 }
 
 /**
