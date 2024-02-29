@@ -10,8 +10,22 @@ import { getBranchNameSeparator, getPrefixes, getValidateBranchNameWhiteList } f
  */
 export async function getBranchDetails(): Promise<{ branchNameFinal: string; approval: string } | null> {
     const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
+    const apps = vscode.workspace.getConfiguration('branch-creator').get<string[]>('appsList', []);
+    const appFirst = vscode.workspace.getConfiguration('branch-creator').get<boolean>('appFirst', false);
+    let appName = '';
+    if (appFirst && apps.length > 0) {
+        appName = await selectAppName();
+        if (!appName) { return null; } // Exit if app selection is required but none is selected
+    }
+
     const prefix = await selectPrefix();
     if (!prefix) { return null; } // Exit if no prefix selected
+
+    if (!appFirst && apps.length > 0) {
+        appName = await selectAppName();
+        if (!appName) { return null; } // Exit if app selection is required but none is selected
+    }
+
     const ticketNumber = await getTicketNumber();
     //Check if ticket number is must or not from settings
     const isTicketNumberMust = vscode.workspace.getConfiguration('branch-creator').get<boolean>('isTicketNumberMust', true);
@@ -26,8 +40,20 @@ export async function getBranchDetails(): Promise<{ branchNameFinal: string; app
     let branchNameFinal = '';
     //If prefix ends with / then dont add separator
     let finalPrefix = prefix;
-    if(!prefix.endsWith('/')){
-        finalPrefix = `${prefix}${branchNameSeparator}`;
+
+    if(apps.length > 0){
+        if(appFirst){
+            const sep = appName.endsWith('/') ? '' : '/';
+            finalPrefix = `${appName}${sep}${prefix}`;
+        }else{
+            const sep = prefix.endsWith('/') ? '' : '/';
+            const appSep = appName.endsWith('/') ? '' : '/';
+            finalPrefix = `${prefix}${sep}${appName}${appSep}`;
+        }
+    }
+
+    if(!finalPrefix.endsWith('/')){
+        finalPrefix = `${finalPrefix}${branchNameSeparator}`;
     }
     if(ticketNumber){
         branchNameFinal = `${finalPrefix}${ticketNumber}${branchNameSeparator}${branchName}`;
@@ -40,6 +66,21 @@ export async function getBranchDetails(): Promise<{ branchNameFinal: string; app
     });
 
     return approval === 'Yes' ? { branchNameFinal, approval } : null;
+}
+
+/**
+ * Presents a quick pick selection of configured apps for the user to choose from.
+ * @returns {Promise<string>} A promise that resolves to the selected app or an empty string if aborted.
+ */
+export async function selectAppName(): Promise<string> {
+    const apps = vscode.workspace.getConfiguration('branch-creator').get<string[]>('appsList', []);
+    // Add number before each prefix for quick selection
+    const formattedApps = apps.map((prefix, index) => `${index + 1}. ${prefix}`);
+    const selected = await vscode.window.showQuickPick(formattedApps, {
+        placeHolder: 'Select a app name'
+    });
+    // Remove the number from the selected prefix
+    return selected ? selected.split('. ')[1] : "";
 }
 
 /**
