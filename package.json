@@ -53,7 +53,8 @@
             "master",
             "main",
             "develop",
-            "staging"
+            "staging",
+            "HEAD -> origin/master"
           ],
           "description": "List of white list branch names that should not be validated"
         },
