@@ -9,6 +9,7 @@ The Git Branch Creator extension simplifies the process of creating and switchin
 - **Configurable Branch Name Separator:** Customize the separator used in branch names to fit your team's standards.
 - **Interactive Branch Creation:** Guides you through each step of the branch creation process with intuitive prompts.
 - **Efficient Branch Switching:** Easily switch between existing local branches with a simple selection from a list, including handling multiple repositories by showing branches common to all.
+- **Branch Naming Validation:** Allows you to validate the naming of all your branches against configured prefixes and a whitelist of branch names. This ensures adherence to your project's branching conventions.
 
 ## Requirements
 
@@ -21,6 +22,8 @@ This extension contributes the following settings:
 
 - `branch-creator.prefixes`: An array of prefixes for branch names. Default is `["feature", "hotfix", "bugfix", "general"]`.
 - `branch-creator.branchNameSeparator`: The separator used in branch names. Default is `-`.
+- `branch-creator.validateWhiteList`: List of whitelist branch names that should not be validated. Defaults include `["master", "main", "develop", "staging", "HEAD -> origin/master"]`.
+
 
 ## Installation
 
@@ -45,6 +48,12 @@ This extension contributes the following settings:
 4. Choose from a list of available local branches. If multiple repositories are selected, only the branches common to all selected repositories will be shown.
 5. Confirm your selection to switch to the chosen branch.
 
+### Validating Branch Names
+
+1. Open the Command Palette with `Ctrl+Shift+P`.
+2. Type "branch creator : Validate Branch" and press Enter.
+3. The extension will validate all branch names in your repository against the configured prefixes and whitelist. You will be notified if there are any branches with invalid prefixes.
+
 ## Customizing
 
 To customize the branch prefixes and name separator:
@@ -58,7 +67,8 @@ Alternatively, you can modify your `settings.json` directly:
 ```json
 {
   "branch-creator.prefixes": ["feature", "hotfix", "bugfix", "release"],
-  "branch-creator.branchNameSeparator": "_"
+  "branch-creator.branchNameSeparator": "_",
+  "branch-creator.validateWhiteList": ["master", "main", "develop", "staging", "HEAD -> origin/master"]
 }
 ```
 

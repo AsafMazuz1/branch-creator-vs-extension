@@ -4,6 +4,13 @@ All notable changes to the "branch-creator" extension will be documented in this
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.7] - 2024-02-29
+
+### Added
+- **Branch Naming Validation Feature**: Introduced a new command (`branch-creator.validate`) allowing users to validate the naming of all their branches against configured prefixes and a whitelist of branch names. This feature aims to ensure adherence to project's branching conventions and improve branch management efficiency.
+- **Validation Whitelist Setting**: Added a new setting `branch-creator.validateWhiteList` to specify branch names that should not be validated. The default list includes `["master", "main", "develop", "staging", "HEAD -> origin/master"]`, covering common branch names that typically do not follow naming conventions.
+
+
 ## [0.0.6] - 2024-02-21
 
 ### Added
@@ -30,10 +37,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 - Minor bugs and performance issues have been addressed to ensure a smoother experience for users.
 
-## [0.0.2] - [Your Previous Version Date]
+## [0.0.2] - 2024-02-15
 
 - Name updated
 
-## [0.0.1] - [Your Initial Release Date]
+## [0.0.1] - 2024-02-15
 
 - Initial release
