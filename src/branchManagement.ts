@@ -1,6 +1,11 @@
 import * as vscode from 'vscode';
 import { getGitReposOrWorkspace, listLocalBranches } from './utils';
-import { getBranchNameSeparator, getPrefixes, getValidateBranchNameWhiteList } from './config';
+import { getAppListFromConfig, getBranchNameSeparator, getIsAppFirstFromConfig, getIsTicketNumberMustFromConfig, getPrefixes, getValidateBranchNameWhiteList } from './config';
+
+
+function appendSlashToStringIfNotExistAlready(str: string): string {
+    return str.endsWith('/') ? '' : '/';
+}
 
 /**
  * Initiates the process to gather all necessary details for creating a new branch.
@@ -9,55 +14,54 @@ import { getBranchNameSeparator, getPrefixes, getValidateBranchNameWhiteList } f
  * A promise that resolves to an object containing all branch details or null if the process is aborted.
  */
 export async function getBranchDetails(): Promise<{ branchNameFinal: string; approval: string } | null> {
-    const branchNameSeparator = vscode.workspace.getConfiguration('branch-creator').get<string>('branchNameSeparator', '-');
-    const apps = vscode.workspace.getConfiguration('branch-creator').get<string[]>('appsList', []);
-    const appFirst = vscode.workspace.getConfiguration('branch-creator').get<boolean>('appFirst', false);
+
+    // get relevant settings from json config 
+    const branchNameSeparator = getBranchNameSeparator();
+    const apps = getAppListFromConfig();
+    const appFirst = getIsAppFirstFromConfig();
+
+    let isAppsExists = apps.length > 0;
     let appName = '';
-    if (appFirst && apps.length > 0) {
-        appName = await selectAppName();
+
+    if (isAppsExists) {
+        appName = await promptUserForAppName();
         if (!appName) { return null; } // Exit if app selection is required but none is selected
     }
-
-    const prefix = await selectPrefix();
+    const prefix = await promptUserForPrefix();
     if (!prefix) { return null; } // Exit if no prefix selected
 
-    if (!appFirst && apps.length > 0) {
-        appName = await selectAppName();
-        if (!appName) { return null; } // Exit if app selection is required but none is selected
-    }
-
-    const ticketNumber = await getTicketNumber();
+    const ticketNumber = await promptUserForTicketNumber();
     //Check if ticket number is must or not from settings
-    const isTicketNumberMust = vscode.workspace.getConfiguration('branch-creator').get<boolean>('isTicketNumberMust', true);
-    if (!ticketNumber && isTicketNumberMust ) {
+    const isTicketNumberMust = getIsTicketNumberMustFromConfig();
+    if (!ticketNumber && isTicketNumberMust) {
         vscode.window.showErrorMessage('Ticket number is required.');
         return null;
-     } // Exit if no ticket number provided
+    } // Exit if no ticket number provided
     const branchName = await getBranchName(branchNameSeparator);
     if (!branchName) { return null; } // Exit if no branch name provided
 
     //Build final branch name based on settings
     let branchNameFinal = '';
-    //If prefix ends with / then dont add separator
+    //If prefix ends with / then don't add separator
     let finalPrefix = prefix;
 
-    if(apps.length > 0){
-        if(appFirst){
-            const sep = appName.endsWith('/') ? '' : '/';
+    if (isAppsExists) {
+        if (appFirst) {
+            const sep = appendSlashToStringIfNotExistAlready(appName);
             finalPrefix = `${appName}${sep}${prefix}`;
-        }else{
-            const sep = prefix.endsWith('/') ? '' : '/';
-            const appSep = appName.endsWith('/') ? '' : '/';
+        } else {
+            const sep = appendSlashToStringIfNotExistAlready(prefix);
+            const appSep = appendSlashToStringIfNotExistAlready(appName);
             finalPrefix = `${prefix}${sep}${appName}${appSep}`;
         }
     }
 
-    if(!finalPrefix.endsWith('/')){
+    if (!finalPrefix.endsWith('/')) {
         finalPrefix = `${finalPrefix}${branchNameSeparator}`;
     }
-    if(ticketNumber){
+    if (ticketNumber) {
         branchNameFinal = `${finalPrefix}${ticketNumber}${branchNameSeparator}${branchName}`;
-    }else{
+    } else {
         branchNameFinal = `${finalPrefix}${branchName}`;
     }
 
@@ -72,12 +76,12 @@ export async function getBranchDetails(): Promise<{ branchNameFinal: string; app
  * Presents a quick pick selection of configured apps for the user to choose from.
  * @returns {Promise<string>} A promise that resolves to the selected app or an empty string if aborted.
  */
-export async function selectAppName(): Promise<string> {
-    const apps = vscode.workspace.getConfiguration('branch-creator').get<string[]>('appsList', []);
+export async function promptUserForAppName(): Promise<string> {
+    const apps = getAppListFromConfig();
     // Add number before each prefix for quick selection
     const formattedApps = apps.map((prefix, index) => `${index + 1}. ${prefix}`);
     const selected = await vscode.window.showQuickPick(formattedApps, {
-        placeHolder: 'Select a app name'
+        placeHolder: 'Select an app name'
     });
     // Remove the number from the selected prefix
     return selected ? selected.split('. ')[1] : "";
@@ -87,7 +91,7 @@ export async function selectAppName(): Promise<string> {
  * Presents a quick pick selection of configured prefixes for the user to choose from.
  * @returns {Promise<string>} A promise that resolves to the selected prefix or an empty string if aborted.
  */
-export async function selectPrefix(): Promise<string> {
+export async function promptUserForPrefix(): Promise<string> {
     const prefixes = vscode.workspace.getConfiguration('branch-creator').get<string[]>('prefixes', []);
     // Add number before each prefix for quick selection
     const formattedPrefixes = prefixes.map((prefix, index) => `${index + 1}. ${prefix}`);
@@ -102,11 +106,11 @@ export async function selectPrefix(): Promise<string> {
  * Requests the user to enter a ticket number through an input box.
  * @returns {Promise<string>} A promise that resolves to the entered ticket number or an empty string if no input is provided.
  */
-export async function getTicketNumber(): Promise<string> {
+export async function promptUserForTicketNumber(): Promise<string> {
     const ticketNumber = await vscode.window.showInputBox({
         prompt: 'Enter the ticket number'
     });
-    return ticketNumber ?? "";
+    return ticketNumber?.trim() ?? "";
 }
 
 /**
