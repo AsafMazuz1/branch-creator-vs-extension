@@ -7,6 +7,7 @@ The Git Branch Creator extension simplifies the process of creating and switchin
 - **Flexible Repository Selection:** Works with both the root workspace and subfolder Git repositories.
 - **Customizable Branch Prefixes:** Configure branch prefixes to match your project's naming conventions for creating new branches.
 - **Configurable Branch Name Separator:** Customize the separator used in branch names to fit your team's standards.
+- **App Name Inclusion in Branch Names:** Provides the option to include app names in branch names, either at the beginning or integrated within the standard branch naming convention. This feature enhances organization and clarity for projects with multiple applications.
 - **Interactive Branch Creation:** Guides you through each step of the branch creation process with intuitive prompts.
 - **Efficient Branch Switching:** Easily switch between existing local branches with a simple selection from a list, including handling multiple repositories by showing branches common to all.
 - **Branch Naming Validation:** Allows you to validate the naming of all your branches against configured prefixes and a whitelist of branch names. This ensures adherence to your project's branching conventions.
@@ -24,6 +25,9 @@ This extension contributes the following settings:
 - `branch-creator.branchNameSeparator`: The separator used in branch names. Default is `-`.
 - `branch-creator.validateWhiteList`: List of whitelist branch names that should not be validated. Defaults include `["master", "main", "develop", "staging", "HEAD -> origin/master"]`.
 - `branch-creator.isTicketNumberMust`: Specifies whether including a ticket number is mandatory for branch naming. Default is `true`. If set to `false`, branches can be created without specifying a ticket number.
+- `branch-creator.appsList`: An array of app names for inclusion in branch names. This allows for branches to be categorized by app name for projects spanning multiple applications. Default is an empty array, indicating no app name inclusion.
+- `branch-creator.appFirst`: A boolean setting that determines if the app name should be placed at the beginning of the branch name when `appsList` is used. This is useful for prioritizing app names in branch categorization. Default is `false`.
+
 
 ## Installation
 
@@ -69,7 +73,12 @@ Alternatively, you can modify your `settings.json` directly:
   "branch-creator.prefixes": ["feature", "hotfix", "bugfix", "release"],
   "branch-creator.branchNameSeparator": "_",
   "branch-creator.validateWhiteList": ["master", "main", "develop", "staging", "HEAD -> origin/master"],
-   "branch-creator.isTicketNumberMust": false
+   "branch-creator.isTicketNumberMust": false,
+    "branch-creator.appsList": [
+        "API",
+        "SDK"
+    ],
+    "branch-creator.appFirst": false,
 }
 ```
 

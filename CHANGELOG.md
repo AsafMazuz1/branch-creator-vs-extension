@@ -4,6 +4,14 @@ All notable changes to the "branch-creator" extension will be documented in this
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.9] - YYYY-MM-DD
+
+### Added
+- **App Name Support in Branch Naming**: Introduced the ability to include app names in branch names, configurable through the new `branch-creator.appsList` and `branch-creator.appFirst` settings. This addition offers enhanced flexibility and organization for managing branches in projects with multiple apps.
+
+### Changed
+- Improved branch naming logic to support conditional inclusion of app names, based on user preferences set in `branch-creator.appsList` and `branch-creator.appFirst`. This allows users to specify whether app names should precede the branch prefix or be integrated into the usual branch naming format.
+
 ## [0.0.8] - 2024-02-29
 
 ### Added

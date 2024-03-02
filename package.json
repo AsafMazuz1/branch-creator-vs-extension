@@ -47,6 +47,16 @@
           ],
           "description": "List of prefixes for branch names."
         },
+        "branch-creator.appsList": {
+            "type": "array",
+            "default": [],
+            "description": "A list of possible app names to include in the branch name. Leave empty if not used."
+        },
+        "branch-creator.appFirst": {
+            "type": "boolean",
+            "default": false,
+            "description": "Determines if the app name should be placed at the beginning of the branch name. Applicable only if 'appsList' is not empty."
+        },
         "branch-creator.validateWhiteList": {
           "type": "array",
           "default": [
