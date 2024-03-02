@@ -49,3 +49,16 @@ export function defaultSwitchAndPull(): boolean {
 export function getValidateBranchNameWhiteList(): string[] {
     return getConfig<string[]>('validateWhiteList', []);
 }
+
+export function getAppListFromConfig(): string[] {
+    return getConfig<string[]>('appList', []);
+}
+
+export function getIsAppFirstFromConfig(): boolean {
+    return getConfig<boolean>('isAppFirst', false);
+}
+
+// TODO: rename this to getIsTicketNumberRequired
+export function getIsTicketNumberMustFromConfig(): boolean {
+    return getConfig<boolean>('isTicketNumberMust', false);
+}
